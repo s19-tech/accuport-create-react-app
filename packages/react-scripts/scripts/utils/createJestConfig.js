@@ -40,6 +40,7 @@ module.exports = (resolve, rootDir, isEjecting) => {
     ],
     testEnvironment: 'jest-environment-jsdom-fourteen',
     transform: {
+      '^.+\\.graphql$': resolve('config/jest/graphqlTagTransform.js'),
       '^.+\\.(js|jsx|ts|tsx)$': isEjecting
         ? '<rootDir>/node_modules/babel-jest'
         : resolve('config/jest/babelTransform.js'),
