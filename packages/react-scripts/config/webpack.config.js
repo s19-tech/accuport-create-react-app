@@ -26,6 +26,7 @@ const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
+const AccuportGetCSSModuleLocalIdent = require('./accuport-getCSSModuleLocalIdent');
 const paths = require('./paths');
 const modules = require('./modules');
 const getClientEnvironment = require('./env');
@@ -54,10 +55,10 @@ const imageInlineSizeLimit = parseInt(
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 
 // style files regexes
-const cssRegex = /\.css$/;
+const cssRegex = /\.css|\.scss$/;
 const cssModuleRegex = /\.module\.css$/;
-const sassRegex = /\.(scss|sass)$/;
-const sassModuleRegex = /\.module\.(scss|sass)$/;
+const sassRegex = /\.(sass)$/;
+const sassModuleRegex = /\.module\.(sass)$/;
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -111,6 +112,24 @@ module.exports = function(webpackEnv) {
           // https://github.com/facebook/create-react-app/issues/2677
           ident: 'postcss',
           plugins: () => [
+            /* Accuport - precss modules */
+            require('postcss-import'),
+            require('postcss-partial-import'),
+            require('postcss-mixins'),
+            require('postcss-advanced-variables'),
+            require('postcss-custom-media'),
+            require('postcss-custom-properties'),
+            require('postcss-media-minmax'),
+            require('postcss-color-function'),
+            require('postcss-nesting'),
+            require('postcss-nested'),
+            require('postcss-custom-selectors'),
+            require('postcss-atroot'),
+            require('postcss-property-lookup'),
+            require('postcss-extend'),
+            require('postcss-selector-matches'),
+            require('postcss-selector-not'),
+            /* Accuport - precss end */
             require('postcss-flexbugs-fixes'),
             require('postcss-preset-env')({
               autoprefixer: {
@@ -501,6 +520,10 @@ module.exports = function(webpackEnv) {
               use: getStyleLoaders({
                 importLoaders: 1,
                 sourceMap: isEnvProduction && shouldUseSourceMap,
+                modules: {
+                  mode: 'global',
+                  getLocalIdent: AccuportGetCSSModuleLocalIdent,
+                },
               }),
               // Don't consider CSS imports dead code even if the
               // containing package claims to have no side effects.
